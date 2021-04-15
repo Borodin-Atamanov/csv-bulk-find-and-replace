@@ -1,2 +1,2 @@
 # csv_mass_replacer
-Multiple text replacement in CSV files
+Multiple text replacement in CSV files.
