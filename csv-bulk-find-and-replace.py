@@ -8,7 +8,9 @@ import jsonpickle
 
 #Debug function for printing complex data in human-readable format
 def print_json (data):
-    json_str = jsonpickle.encode(data, unpicklable=False, indent=2, separators=(',', ':'))
+    jsonpickle.set_preferred_backend('json')
+    jsonpickle.set_encoder_options('json', ensure_ascii=False)
+    json_str = jsonpickle.encode(data, unpicklable=False, fail_safe=None, indent=2, separators=(',', ':'))
     print (json_str)
     return json_str
 
@@ -61,12 +63,19 @@ def main():
         if config.getint('Common', 'verbose') >= 2: print ("Load configuration from config file \"{0}\".".format(config['file_paths']['config_file']))
         if config.getint('Common', 'verbose') >= 3: print_json (config._sections)
 
+    #Check that find_replace_file is exist. Will create empty one if not
+    if (not os.path.isfile(config['file_paths']['find_replace_file'])):
+        file_handler = open(config['file_paths']['find_replace_file'], "w")
+        file_handler.write("\n")
+        file_handler.close()
+        if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
+        #Program termination?
 
-    #Check what input_file is exist. Create empty one if not
+    #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
-        input_file_handler = open(config['file_paths']['input_file'], "w")
-        input_file_handler.write("\n")
-        input_file_handler.close()
+        file_handler = open(config['file_paths']['input_file'], "w")
+        file_handler.write("\n")
+        file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
         #Program termination
         return false;
@@ -77,8 +86,9 @@ def main():
             line_count = 0
             for row in csv_reader:
                 line_count += 1
+                print_json(row)
+                if line_count > 10: break;
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['input_file']))
-
 
     #if (os.path.isfile(config['db']['sqlite3file'])):
 
