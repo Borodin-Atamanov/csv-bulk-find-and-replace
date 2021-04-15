@@ -1,3 +1,13 @@
+
+logs/**
+result/**
+*.pyc
+__pycache__
+backups
+#push2github.sh
+translate_json_cURL_send_test.sh
+config_secret_keys.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
