@@ -1,10 +1,21 @@
+#!/usr/bin/env python
+"""
+
+"""
+
 import os
 import csv
 import shutil
 import datetime
 from configparser import ConfigParser, ExtendedInterpolation
-#from config import config
 import jsonpickle
+
+__author__ = "Slava Borodin-Atamanov"
+__license__ = "GPLv3 (GNU General Public License Version 3)"
+__maintainer__ = "python@Borodin-Atamanov.ru"
+__copyright__ = "Copyright 2021, Slava Borodin-Atamanov"
+__email__ = "python@Borodin-Atamanov.ru"
+__status__ = "Production"
 
 #Debug function for printing complex data in human-readable format
 def print_json (data):
