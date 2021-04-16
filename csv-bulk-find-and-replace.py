@@ -18,7 +18,7 @@ def print_json (data):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quet. 3 - very verbose
-    verbose = 3
+    verbose = 1
 
 [file_paths]
     #Application create <work_dir> in current directory. Changing <work_dir> in the config will not give any effect
@@ -92,7 +92,7 @@ def main():
                     if config.getint('Common', 'verbose') >= 2: print (row)
             #Sort dictionary by key length (biggest key will be a the top of dict)
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
-            print_json(find_replace_dict)
+            if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
             find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding='UTF-8')
             find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
             find_replace_sorted_file_writer.writerows(find_replace_dict.items())
@@ -126,8 +126,8 @@ def main():
                 for cell in row:
                     cell_new = cell
                     #Cycle throw all find_replace_dict pairs
+                    #Search and replace every substring, starting from longest strings to shortest
                     for find_str in find_replace_dict:
-                        #Search and replace every substring, starting from longest strings to shortest
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str])
                     col += 1
                     row_new.append(cell_new)
