@@ -41,7 +41,7 @@ def print_json (data):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quet. 3 - very verbose
-    verbose = 1
+    verbose = 3
 
 [file_paths]
     #Application create <work_dir> in current directory. Changing <work_dir> in the config will not give any effect
@@ -108,7 +108,11 @@ def main():
                 line_count += 1
                 #Обрабатывать ситуацию, когда нет значения по индексу 0 или 1!
                 if (len(row) >= 2):
-                    find_replace_dict[row[0]] = row[1]
+                    find_replace_dict[row[0]] = \
+                        {
+                            'replacer': row[1],
+                            'replacements_count': 0,
+                        }
                 else:
                     #Ignore rows, if they don't have 2 cells
                     if config.getint('Common', 'verbose') >= 1: print ("Ignore row on line {0} from find_and_replace-file \"{1}\" because it has less than 2 cells! ".format(line_count, config['file_paths']['find_replace_file']))
@@ -117,7 +121,6 @@ def main():
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['find_replace_file']))
             if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
-
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
@@ -136,6 +139,8 @@ def main():
         with open(config['file_paths']['input_file'], mode='r') as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
+            changed_cells_count = 0
+            replacements_count = 0
             for row in csv_reader:
                 line_count += 1
                 #пройтись по списку row, каждое значение списка подвергнуть преобразованию, ради которого и затевалась эта программа
@@ -147,19 +152,28 @@ def main():
                     #Cycle throw all find_replace_dict pairs
                     #Search and replace every substring, starting from longest strings to shortest
                     for find_str in find_replace_dict:
-                        cell_new = cell_new.replace(find_str, find_replace_dict[find_str])
+                        cell_before_replacement = cell_new
+                        cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
+                        if cell_before_replacement != cell_new:
+                            replacements_count += 1
+                            find_replace_dict[find_str]['replacements_count'] += 1
+                    if cell != cell_new:
+                        changed_cells_count += 1
                     col += 1
                     row_new.append(cell_new)
                 #Write new line to output_file
                 output_file_writer.writerow(row_new)
-            if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['input_file']))
+            if config.getint('Common', 'verbose') >= 2: print ("{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations\nInput file: {3}".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file']))
 
         output_file.close()
 
         #Write sorted find_replace pairs to file, add some statistics
+        all_rows = []
+        for find_str in find_replace_dict:
+            all_rows.append([find_str, find_replace_dict[find_str]['replacer'],  find_replace_dict[find_str]['replacements_count']])
         find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding='UTF-8')
         find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
-        find_replace_sorted_file_writer.writerows(find_replace_dict.items())
+        find_replace_sorted_file_writer.writerows(all_rows)
         find_replace_sorted_file.close()
 
 if __name__ == "__main__":
