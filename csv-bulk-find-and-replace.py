@@ -115,13 +115,9 @@ def main():
                     if config.getint('Common', 'verbose') >= 2: print (row)
             #Sort dictionary by key length (biggest key will be a the top of dict)
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
-            if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
-            find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding='UTF-8')
-            find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
-            find_replace_sorted_file_writer.writerows(find_replace_dict.items())
-            find_replace_sorted_file.close()
-
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['find_replace_file']))
+            if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
+
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
@@ -159,6 +155,12 @@ def main():
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['input_file']))
 
         output_file.close()
+
+        #Write sorted find_replace pairs to file, add some statistics
+        find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding='UTF-8')
+        find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
+        find_replace_sorted_file_writer.writerows(find_replace_dict.items())
+        find_replace_sorted_file.close()
 
 if __name__ == "__main__":
     main()
