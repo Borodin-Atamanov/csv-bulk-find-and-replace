@@ -1,4 +1,7 @@
 input.csv
+findreplace.csv
+output-csv-bulk-find-and-replace/**
+
 logs/**
 result/**
 *.pyc

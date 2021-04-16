@@ -32,6 +32,7 @@ config_str = '''
     input_file = input.csv
 
     #File with a pairs of "find and replace" strings.
+    #In the first column - which substring to search for. In the second column - which substring to replace.
     find_replace_file = findreplace.csv
 
     #Output filename. Where to save results of the application work?
@@ -70,6 +71,19 @@ def main():
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
         #Program termination?
+    else:
+        #Read CSV-data from find_replace_file and save it to dictionary
+        find_replace_dict = dict()
+        with open(config['file_paths']['find_replace_file'], mode='r') as input_file:
+            #In first column of
+            csv_reader = csv.reader(input_file)
+            line_count = 0
+            for row in csv_reader:
+                line_count += 1
+                print_json(row)
+                if line_count > 10: break;
+            #TODO Sort dictionary by key length
+            if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['find_replace_file']))
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
