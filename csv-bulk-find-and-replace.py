@@ -80,9 +80,12 @@ def main():
             line_count = 0
             for row in csv_reader:
                 line_count += 1
-                print_json(row)
-                if line_count > 10: break;
-            #TODO Sort dictionary by key length
+                #print(row)
+                #TODO Обрабатывать ситуацию, когда нет значения по индексу 0 или 1!
+                find_replace_dict[row[0]] = row[1]
+            #Sort dictionary by key length (biggest key will be a the top of dict)
+            find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
+            print_json(find_replace_dict)
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['find_replace_file']))
 
     #Check that input_file is exist. Will create empty one if not
@@ -100,12 +103,12 @@ def main():
             line_count = 0
             for row in csv_reader:
                 line_count += 1
-                print_json(row)
-                if line_count > 10: break;
+                print(type(row))
+                #TODO пройтись по списку row, каждое значение списка подвергнуть преобразованию, ради которого и затевалась эта программа
+                if line_count > 3: break;
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['input_file']))
 
     #if (os.path.isfile(config['db']['sqlite3file'])):
-
 
 if __name__ == "__main__":
     main()
