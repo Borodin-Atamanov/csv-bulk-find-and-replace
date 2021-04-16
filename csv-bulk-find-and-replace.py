@@ -80,9 +80,13 @@ def main():
             line_count = 0
             for row in csv_reader:
                 line_count += 1
-                #print(row)
                 #TODO Обрабатывать ситуацию, когда нет значения по индексу 0 или 1!
-                find_replace_dict[row[0]] = row[1]
+                if (len(row) >= 2):
+                    find_replace_dict[row[0]] = row[1]
+                else:
+                    #Ignore rows, if they don't have 2 cells
+                    if config.getint('Common', 'verbose') >= 1: print ("Ignore row on line {0} from find_and_replace-file \"{1}\" because it has less than 2 cells! ".format(line_count, config['file_paths']['find_replace_file']))
+                    if config.getint('Common', 'verbose') >= 2: print (row)
             #Sort dictionary by key length (biggest key will be a the top of dict)
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
             print_json(find_replace_dict)
