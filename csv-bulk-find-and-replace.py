@@ -130,7 +130,7 @@ def main():
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
         #Program termination
-        return false;
+        return False;
     else:
         #Create output_file
         output_file = open(config['file_paths']['output_file'], mode='w', encoding='UTF-8')
