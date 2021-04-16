@@ -80,7 +80,7 @@ def main():
             line_count = 0
             for row in csv_reader:
                 line_count += 1
-                #TODO Обрабатывать ситуацию, когда нет значения по индексу 0 или 1!
+                #Обрабатывать ситуацию, когда нет значения по индексу 0 или 1!
                 if (len(row) >= 2):
                     find_replace_dict[row[0]] = row[1]
                 else:
@@ -101,18 +101,34 @@ def main():
         #Program termination
         return false;
     else:
+        #Create output_file
+        output_file = open(config['file_paths']['output_file'], mode='w', encoding='UTF-8')
+        output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
+        #output_file_writer.writerow(['John Smith', 'Accounting', 'November'])
+
         #Read CSV-data from input file...
         with open(config['file_paths']['input_file'], mode='r') as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
             for row in csv_reader:
                 line_count += 1
-                print(type(row))
-                #TODO пройтись по списку row, каждое значение списка подвергнуть преобразованию, ради которого и затевалась эта программа
-                if line_count > 3: break;
+                #пройтись по списку row, каждое значение списка подвергнуть преобразованию, ради которого и затевалась эта программа
+                col=0   #current column number
+                row_new = []
+                #Пройдёмся по каждой колонке в строке
+                for cell in row:
+                    cell_new = cell
+                    #Cycle throw all find_replace_dict pairs
+                    for find_str in find_replace_dict:
+                        #Search and replace every substring, starting from longest strings to shortest
+                        cell_new = cell_new.replace(find_str, find_replace_dict[find_str])
+                    col += 1
+                    row_new.append(cell_new)
+                #Write new line to output_file
+                output_file_writer.writerow(row_new)
             if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['input_file']))
 
-    #if (os.path.isfile(config['db']['sqlite3file'])):
+        output_file.close()
 
 if __name__ == "__main__":
     main()
