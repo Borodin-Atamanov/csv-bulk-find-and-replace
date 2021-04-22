@@ -80,7 +80,7 @@ def main():
 
     #Create config-file if it is not exists
     if (not os.path.isfile(config['file_paths']['config_file'])):
-        config_file_handler = open(config['file_paths']['config_file'], "w")
+        config_file_handler = open(config['file_paths']['config_file'],  mode="w", encoding='utf-8')
         written_bytes = config_file_handler.write(config_str)
         config_file_handler.close()
         if config.getint('Common', 'verbose') >= 2: print ("Create new config file \"{0}\". Writed {1} bytes. ".format(config['file_paths']['config_file'], written_bytes))
@@ -92,7 +92,7 @@ def main():
 
     #Check that find_replace_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['find_replace_file'])):
-        file_handler = open(config['file_paths']['find_replace_file'], "w")
+        file_handler = open(config['file_paths']['find_replace_file'], mode="w", encoding='utf-8')
         file_handler.write("\n")
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
@@ -100,7 +100,7 @@ def main():
     else:
         #Read CSV-data from find_replace_file and save it to dictionary
         find_replace_dict = dict()
-        with open(config['file_paths']['find_replace_file'], mode='r') as input_file:
+        with open(config['file_paths']['find_replace_file'], mode='r', encoding='utf-8') as input_file:
             #In first column of
             csv_reader = csv.reader(input_file)
             line_count = 0
@@ -124,7 +124,7 @@ def main():
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
-        file_handler = open(config['file_paths']['input_file'], "w")
+        file_handler = open(config['file_paths']['input_file'], mode="w", encoding='utf-8')
         file_handler.write("\n")
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
@@ -136,7 +136,7 @@ def main():
         output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
 
         #Read CSV-data from input file...
-        with open(config['file_paths']['input_file'], mode='r') as input_file:
+        with open(config['file_paths']['input_file'], encoding='utf-8', mode='r') as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
             changed_cells_count = 0
