@@ -31,17 +31,33 @@ __status__ = "Production"
 
 #Debug function for printing complex data in human-readable format
 def print_json (data):
+    '''Print any object in human-readable JSON format with indents'''
     jsonpickle.set_preferred_backend('json')
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     json_str = jsonpickle.encode(data, unpicklable=False, fail_safe=None, indent=2, separators=(',', ':'))
     print (json_str)
     return json_str
 
+def str_ireplace(text, old, new):
+    '''Function make case-insensitive replace in input text string'''
+    idx = 0
+    while idx < len(text):
+        index_l = text.lower().find(old.lower(), idx)
+        if index_l == -1:
+            return text
+        text = text[:index_l] + new + text[index_l + len(old):]
+        idx = index_l + len(new)
+    return text
+
 #hardcoded default configuration
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quiet. 3 - very verbose
     verbose = 2
+
+    #Use case insensitive search and replace?
+    case_insensitive = On
+
 
 [file_paths]
     #Application create <work_dir> in current directory. Changing <work_dir> in the config will not give any effect
@@ -70,12 +86,14 @@ config_str = '''
     default_input_file_content = "You should eat"
         "pizza, beer, and ice cream"
         "every day!"
+        "CAPS cAseInsEnsitIvE lower"
 
     default_find_replace_content = "You should","You can"
         "pizza","fruits"
         "beer","vegetables"
         "ice cream","fiber"
         "!","."
+        "CaSeiNsensitive","CamelCase"
 
 '''
 
@@ -166,7 +184,11 @@ def main():
                     #Search and replace every substring, starting from longest strings to shortest
                     for find_str in find_replace_dict:
                         cell_before_replacement = cell_new
+                        #Try to make case sensitive replace at first
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
+                        if config.getboolean('Common', 'case_insensitive') == True:
+                            #Try to make case insensitive replace if needed
+                            cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
                         if cell_before_replacement != cell_new:
                             replacements_count += 1
                             find_replace_dict[find_str]['replacements_count'] += 1
