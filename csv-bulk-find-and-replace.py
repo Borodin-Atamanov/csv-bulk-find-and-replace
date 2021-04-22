@@ -55,7 +55,7 @@ config_str = '''
     verbose = 2
 
     #Use case insensitive search and replace?
-    case_insensitive = off
+    case_insensitive = On
 
 
 [file_paths]
