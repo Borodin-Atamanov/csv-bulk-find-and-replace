@@ -29,9 +29,8 @@ __copyright__ = "Copyright 2021, Slava Borodin-Atamanov"
 __email__ = "python@Borodin-Atamanov.ru"
 __status__ = "Production"
 
-#Debug function for printing complex data in human-readable format
 def print_json (data):
-    '''Print any object in human-readable JSON format with indents'''
+    '''Printing complex data in human-readable JSON format with indents and return string with JSON'''
     jsonpickle.set_preferred_backend('json')
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     json_str = jsonpickle.encode(data, unpicklable=False, fail_safe=None, indent=2, separators=(',', ':'))
