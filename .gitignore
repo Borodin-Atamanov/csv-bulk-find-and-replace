@@ -1,7 +1,7 @@
 input.csv
 findreplace.csv
+deletka.sh
 output-csv-bulk-find-and-replace/**
-
 logs/**
 result/**
 *.pyc
