@@ -40,7 +40,7 @@ def print_json (data):
 #hardcoded default configuration
 config_str = '''
 [Common]
-    #Application verbosity level. 0 - quet. 3 - very verbose
+    #Application verbosity level. 0 - quiet. 3 - very verbose
     verbose = 3
 
 [file_paths]
@@ -50,6 +50,9 @@ config_str = '''
     #Name of the config file. If it's not exists, it will create in <work_dir>
     #You can change the config file, or delete it. If you delete this config file - application will create a new one. But changing name of the config_file will not give any effect.
     config_file = ${work_dir}/config.cfg
+
+    #file encoding
+    encoding = utf-8
 
     #Input filename. Which file to process?
     input_file = input.csv
@@ -62,7 +65,10 @@ config_str = '''
     output_file = ${work_dir}/output.csv
 
     #Save pairs of "find and replace", sorted by "find" strings lenghts in this file. It will not affect further work, but it may contain useful statistics.
-    find_replace_sorted_file = ${work_dir}/findreplace.csv
+    find_replace_sorted_file = ${work_dir}/findreplace-statistics.csv
+
+    default_find_replace_content = "найти","Заменить"
+        "ещё найти","ещё Заменить"
 
 '''
 
@@ -80,7 +86,7 @@ def main():
 
     #Create config-file if it is not exists
     if (not os.path.isfile(config['file_paths']['config_file'])):
-        config_file_handler = open(config['file_paths']['config_file'],  mode="w", encoding='utf-8')
+        config_file_handler = open(config['file_paths']['config_file'],  mode="w", encoding=config['file_paths']['encoding'])
         written_bytes = config_file_handler.write(config_str)
         config_file_handler.close()
         if config.getint('Common', 'verbose') >= 2: print ("Create new config file \"{0}\". Writed {1} bytes. ".format(config['file_paths']['config_file'], written_bytes))
@@ -92,7 +98,7 @@ def main():
 
     #Check that find_replace_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['find_replace_file'])):
-        file_handler = open(config['file_paths']['find_replace_file'], mode="w", encoding='utf-8')
+        file_handler = open(config['file_paths']['find_replace_file'], mode="w", encoding=config['file_paths']['encoding'])
         file_handler.write("\n")
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
@@ -100,7 +106,7 @@ def main():
     else:
         #Read CSV-data from find_replace_file and save it to dictionary
         find_replace_dict = dict()
-        with open(config['file_paths']['find_replace_file'], mode='r', encoding='utf-8') as input_file:
+        with open(config['file_paths']['find_replace_file'], mode='r', encoding=config['file_paths']['encoding']) as input_file:
             #In first column of
             csv_reader = csv.reader(input_file)
             line_count = 0
@@ -124,7 +130,7 @@ def main():
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
-        file_handler = open(config['file_paths']['input_file'], mode="w", encoding='utf-8')
+        file_handler = open(config['file_paths']['input_file'], mode="w", encoding=config['file_paths']['encoding'])
         file_handler.write("\n")
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
@@ -132,11 +138,11 @@ def main():
         return False;
     else:
         #Create output_file
-        output_file = open(config['file_paths']['output_file'], mode='w', encoding='UTF-8')
+        output_file = open(config['file_paths']['output_file'], mode='w', encoding=config['file_paths']['encoding'])
         output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
 
         #Read CSV-data from input file...
-        with open(config['file_paths']['input_file'], encoding='utf-8', mode='r') as input_file:
+        with open(config['file_paths']['input_file'], mode='r', encoding=config['file_paths']['encoding']) as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
             changed_cells_count = 0
@@ -171,7 +177,7 @@ def main():
         all_rows = []
         for find_str in find_replace_dict:
             all_rows.append([find_str, find_replace_dict[find_str]['replacer'],  find_replace_dict[find_str]['replacements_count']])
-        find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding='UTF-8')
+        find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding=config['file_paths']['encoding'])
         find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
         find_replace_sorted_file_writer.writerows(all_rows)
         find_replace_sorted_file.close()
