@@ -65,7 +65,7 @@ config_str = '''
 
     #Name of the config file. If it's not exists, it will create in <work_dir>
     #You can change the config file, or delete it. If you delete this config file - application will create a new one. But changing name of the config_file will not give any effect.
-    config_file = ${work_dir}/config.cfg
+    config_file = ${work_dir}/config.ini
 
     #file encoding
     encoding = utf-8
