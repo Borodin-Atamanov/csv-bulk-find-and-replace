@@ -55,7 +55,7 @@ config_str = '''
     verbose = 2
 
     #Use case insensitive search and replace?
-    case_insensitive = On
+    case_insensitive = off
 
 
 [file_paths]
@@ -186,12 +186,12 @@ def main():
                         cell_before_replacement = cell_new
                         #Try to make case sensitive replace at first
                         #last_cell_replacements_count = cell_new.count(find_str)
+                        last_cell_replacements_count = cell_before_replacement.count(find_str)
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
                         if config.getboolean('Common', 'case_insensitive') == True:
                             #Try to make case insensitive replace if needed
                             cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
-                            #last_cell_replacements_count = cell_new.upper().count(find_str.upper())
-                            last_cell_replacements_count = cell_before_replacement.count(find_str)
+                            last_cell_replacements_count = cell_new.upper().count(find_str.upper())
                         if config.getint('Common', 'verbose') >= 4: print (f"\ninput=[{cell_before_replacement}]")
                         if config.getint('Common', 'verbose') >= 4: print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
                         if config.getint('Common', 'verbose') >= 4: print (f"result=[{cell_new}]")
