@@ -176,7 +176,7 @@ def main():
                     row_new.append(cell_new)
                 #Write new line to output_file
                 output_file_writer.writerow(row_new)
-            if config.getint('Common', 'verbose') >= 2: print ("{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations\nInput file: {3}".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file']))
+            if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file'], config['file_paths']['find_replace_file']))
 
         output_file.close()
 
