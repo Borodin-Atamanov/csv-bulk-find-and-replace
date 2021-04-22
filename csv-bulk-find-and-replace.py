@@ -52,7 +52,7 @@ def str_ireplace(text, old, new):
 #hardcoded default configuration
 config_str = '''
 [Common]
-    #Application verbosity level. 0 - quiet. 3 - very verbose
+    #Application verbosity level. 0 - quiet. 2 - Ok. 4 - very verbose
     verbose = 2
 
     #Use case insensitive search and replace?
@@ -84,7 +84,7 @@ config_str = '''
     find_replace_sorted_file = ${work_dir}/findreplace-statistics.csv
 
     default_input_file_content = "You should eat"
-        "pizza, beer, and ice cream"
+        "1 pizza, 1 beer, and 1 ice cream"
         "every day!"
         "CAPS cAseInsEnsitIvE lower"
 
@@ -93,6 +93,7 @@ config_str = '''
         "beer","vegetables"
         "ice cream","fiber"
         "!","."
+        "1 ",""
         "CaSeiNsensitive","CamelCase"
 
 '''
@@ -116,7 +117,7 @@ def main():
         config_file_handler.close()
         if config.getint('Common', 'verbose') >= 2: print ("Create new config file \"{0}\". Writed {1} bytes. ".format(config['file_paths']['config_file'], written_bytes))
     else:
-        if config.getint('Common', 'verbose') >= 2: print ("Config file \"{0}\" is already exists.".format(config['file_paths']['config_file']))
+        if config.getint('Common', 'verbose') >= 3: print ("Config file \"{0}\" is already exists.".format(config['file_paths']['config_file']))
         loaded_filenames = config.read(config['file_paths']['config_file'])
         if config.getint('Common', 'verbose') >= 2: print ("Load configuration from config file \"{0}\".".format(config['file_paths']['config_file']))
         if config.getint('Common', 'verbose') >= 3: print_json (config._sections)
@@ -185,13 +186,20 @@ def main():
                     for find_str in find_replace_dict:
                         cell_before_replacement = cell_new
                         #Try to make case sensitive replace at first
+                        #last_cell_replacements_count = cell_new.count(find_str)
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
                         if config.getboolean('Common', 'case_insensitive') == True:
                             #Try to make case insensitive replace if needed
                             cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
+                            #last_cell_replacements_count = cell_new.upper().count(find_str.upper())
+                            last_cell_replacements_count = cell_before_replacement.count(find_str)
+                        if config.getint('Common', 'verbose') >= 4: print (f"\ninput=[{cell_before_replacement}]")
+                        if config.getint('Common', 'verbose') >= 4: print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
+                        if config.getint('Common', 'verbose') >= 4: print (f"result=[{cell_new}]")
+                        if config.getint('Common', 'verbose') >= 4: print (f"last_cell_replacements_count={last_cell_replacements_count}")
                         if cell_before_replacement != cell_new:
-                            replacements_count += 1
-                            find_replace_dict[find_str]['replacements_count'] += 1
+                            replacements_count += last_cell_replacements_count
+                            find_replace_dict[find_str]['replacements_count'] += last_cell_replacements_count
                     if cell != cell_new:
                         changed_cells_count += 1
                     col += 1
