@@ -185,7 +185,7 @@ def main():
         for find_str in find_replace_dict:
             all_rows.append([find_str, find_replace_dict[find_str]['replacer'],  find_replace_dict[find_str]['replacements_count']])
         find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding=config['file_paths']['encoding'])
-        find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
+        find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
         find_replace_sorted_file_writer.writerows(all_rows)
         find_replace_sorted_file.close()
 
