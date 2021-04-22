@@ -6,7 +6,7 @@ logs/**
 result/**
 *.pyc
 __pycache__
-backups
+backups/**
 #push2github.sh
 translate_json_cURL_send_test.sh
 config_secret_keys.py

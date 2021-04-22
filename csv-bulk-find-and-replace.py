@@ -41,7 +41,7 @@ def print_json (data):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quiet. 3 - very verbose
-    verbose = 3
+    verbose = 2
 
 [file_paths]
     #Application create <work_dir> in current directory. Changing <work_dir> in the config will not give any effect
@@ -67,8 +67,15 @@ config_str = '''
     #Save pairs of "find and replace", sorted by "find" strings lenghts in this file. It will not affect further work, but it may contain useful statistics.
     find_replace_sorted_file = ${work_dir}/findreplace-statistics.csv
 
-    default_find_replace_content = "найти","Заменить"
-        "ещё найти","ещё Заменить"
+    default_input_file_content = "You should eat"
+        "pizza, beer, and ice cream"
+        "every day!"
+
+    default_find_replace_content = "You should","You can"
+        "pizza","fruits"
+        "beer","vegetables"
+        "ice cream","fiber"
+        "!","."
 
 '''
 
@@ -99,7 +106,7 @@ def main():
     #Check that find_replace_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['find_replace_file'])):
         file_handler = open(config['file_paths']['find_replace_file'], mode="w", encoding=config['file_paths']['encoding'])
-        file_handler.write("\n")
+        file_handler.write(config['file_paths']['default_find_replace_content'])
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
         #Program termination?
@@ -131,7 +138,7 @@ def main():
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['file_paths']['input_file'])):
         file_handler = open(config['file_paths']['input_file'], mode="w", encoding=config['file_paths']['encoding'])
-        file_handler.write("\n")
+        file_handler.write(config['file_paths']['default_input_file_content'])
         file_handler.close()
         if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
         #Program termination
