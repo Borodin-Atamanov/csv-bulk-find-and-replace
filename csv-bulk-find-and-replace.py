@@ -146,7 +146,7 @@ def main():
     else:
         #Create output_file
         output_file = open(config['file_paths']['output_file'], mode='w', encoding=config['file_paths']['encoding'])
-        output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\r\n', quoting=csv.QUOTE_ALL)
+        output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
 
         #Read CSV-data from input file...
         with open(config['file_paths']['input_file'], mode='r', encoding=config['file_paths']['encoding']) as input_file:
