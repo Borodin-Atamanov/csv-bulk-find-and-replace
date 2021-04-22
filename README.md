@@ -2,20 +2,19 @@ Bulk find and replace in CSV files
 
 © Copyright 2021 Slava Borodin-Atamanov
 
-Программа читает все ячейки из файла input.csv, ищет строку из первой колонки файла findreplace.csv, заменяет на строку из второй колонки файла findreplace.csv
+The program reads all cells from the "input.csv", searches for a line from the first column from the "findreplace.csv", replaces it with a string from the second column of the "findreplace.csv" file.
 
-Запустите программу
-python csv-bulk-find-and-replace.py
+Run the program
+`python csv-bulk-find-and-replace.py`
 
-Создадутся примеры input.csv и findreplace.csv
+The input.csv and findreplace.csv examples will be created
 
-Поместите исходный текст в input.csv
+Put your source text to input.csv
 
-Сохраните пары "что-найти", "на что заменить" в файл findreplace.csv
-В первой колонке - что нужно найти, во второй колонке - на что заменить.
+Save the "what-to-find", "what to replace" pairs to the "findreplace.csv"
+In the first column - what-to-find, in the second column what-to-replace.
 
-Программа создаст конфигурацию в файле config.ini в директории output-csv-bulk-find-and-replace
-
+The program will create a configuration in the config.ini file in the "output-csv-bulk-find-and-replace" directory
 
 
 Licensed under the Apache License, Version 2.0 (the "License");
