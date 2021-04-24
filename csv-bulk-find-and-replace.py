@@ -58,7 +58,7 @@ config_str = '''
     case_insensitive = On
 
 
-[file_paths]
+[files]
     #Application create <work_dir> in current directory. Changing <work_dir> in the config will not give any effect
     work_dir = output-csv-bulk-find-and-replace
 
@@ -107,31 +107,31 @@ def main():
     if config.getint('Common', 'verbose') >= 3: print_json (config._sections)
 
     #create <work_dir> if it is not exists
-    os.makedirs(config['file_paths']['work_dir'], exist_ok=True)
+    os.makedirs(config['files']['work_dir'], exist_ok=True)
 
     #Create config-file if it is not exists
-    if (not os.path.isfile(config['file_paths']['config_file'])):
-        config_file_handler = open(config['file_paths']['config_file'],  mode="w", encoding=config['file_paths']['encoding'])
+    if (not os.path.isfile(config['files']['config_file'])):
+        config_file_handler = open(config['files']['config_file'],  mode="w", encoding=config['files']['encoding'])
         written_bytes = config_file_handler.write(config_str)
         config_file_handler.close()
-        if config.getint('Common', 'verbose') >= 2: print ("Create new config file \"{0}\". Writed {1} bytes. ".format(config['file_paths']['config_file'], written_bytes))
+        if config.getint('Common', 'verbose') >= 2: print ("Create new config file \"{0}\". Writed {1} bytes. ".format(config['files']['config_file'], written_bytes))
     else:
-        if config.getint('Common', 'verbose') >= 3: print ("Config file \"{0}\" is already exists.".format(config['file_paths']['config_file']))
-        loaded_filenames = config.read(config['file_paths']['config_file'])
-        if config.getint('Common', 'verbose') >= 2: print ("Load configuration from config file \"{0}\".".format(config['file_paths']['config_file']))
+        if config.getint('Common', 'verbose') >= 3: print ("Config file \"{0}\" is already exists.".format(config['files']['config_file']))
+        loaded_filenames = config.read(config['files']['config_file'])
+        if config.getint('Common', 'verbose') >= 2: print ("Load configuration from config file \"{0}\".".format(config['files']['config_file']))
         if config.getint('Common', 'verbose') >= 3: print_json (config._sections)
 
     #Check that find_replace_file is exist. Will create empty one if not
-    if (not os.path.isfile(config['file_paths']['find_replace_file'])):
-        file_handler = open(config['file_paths']['find_replace_file'], mode="w", encoding=config['file_paths']['encoding'])
-        file_handler.write(config['file_paths']['default_find_replace_content'])
+    if (not os.path.isfile(config['files']['find_replace_file'])):
+        file_handler = open(config['files']['find_replace_file'], mode="w", encoding=config['files']['encoding'])
+        file_handler.write(config['files']['default_find_replace_content'])
         file_handler.close()
-        if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['find_replace_file']))
+        if config.getint('Common', 'verbose') >= 1: print ("\"find_and_replace\"-file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['files']['find_replace_file']))
         #Program termination?
     else:
         #Read CSV-data from find_replace_file and save it to dictionary
         find_replace_dict = dict()
-        with open(config['file_paths']['find_replace_file'], mode='r', encoding=config['file_paths']['encoding']) as input_file:
+        with open(config['files']['find_replace_file'], mode='r', encoding=config['files']['encoding']) as input_file:
             #In first column of
             csv_reader = csv.reader(input_file)
             line_count = 0
@@ -146,28 +146,28 @@ def main():
                         }
                 else:
                     #Ignore rows, if they don't have 2 cells
-                    if config.getint('Common', 'verbose') >= 1: print ("Ignore row on line {0} from find_and_replace-file \"{1}\" because it has less than 2 cells! ".format(line_count, config['file_paths']['find_replace_file']))
+                    if config.getint('Common', 'verbose') >= 1: print ("Ignore row on line {0} from find_and_replace-file \"{1}\" because it has less than 2 cells! ".format(line_count, config['files']['find_replace_file']))
                     if config.getint('Common', 'verbose') >= 2: print (row)
             #Sort dictionary by key length (biggest key will be at the top of dict)
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
-            if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['file_paths']['find_replace_file']))
+            if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['files']['find_replace_file']))
             if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
 
     #Check that input_file is exist. Will create empty one if not
-    if (not os.path.isfile(config['file_paths']['input_file'])):
-        file_handler = open(config['file_paths']['input_file'], mode="w", encoding=config['file_paths']['encoding'])
-        file_handler.write(config['file_paths']['default_input_file_content'])
+    if (not os.path.isfile(config['files']['input_file'])):
+        file_handler = open(config['files']['input_file'], mode="w", encoding=config['files']['encoding'])
+        file_handler.write(config['files']['default_input_file_content'])
         file_handler.close()
-        if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['file_paths']['input_file']))
+        if config.getint('Common', 'verbose') >= 1: print ("Input file \"{0}\" was not exist! I created empty one for you. That's all I can do. Sorry. ".format(config['files']['input_file']))
         #Program termination
         return False;
     else:
         #Create output_file
-        output_file = open(config['file_paths']['output_file'], mode='w', encoding=config['file_paths']['encoding'])
+        output_file = open(config['files']['output_file'], mode='w', encoding=config['files']['encoding'])
         output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
 
         #Read CSV-data from input file...
-        with open(config['file_paths']['input_file'], mode='r', encoding=config['file_paths']['encoding']) as input_file:
+        with open(config['files']['input_file'], mode='r', encoding=config['files']['encoding']) as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
             changed_cells_count = 0
@@ -205,9 +205,9 @@ def main():
                     row_new.append(cell_new)
                 #Write new line to output_file
                 output_file_writer.writerow(row_new)
-            #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file'], config['file_paths']['find_replace_file']))
-            if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['file_paths']['input_file']}")
-            if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['file_paths']['find_replace_file']}")
+            #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['files']['input_file'], config['files']['find_replace_file']))
+            if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['files']['input_file']}")
+            if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['files']['find_replace_file']}")
             if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed")
             if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} changed cells")
             if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} Find-and-replace operations")
@@ -218,7 +218,7 @@ def main():
         all_rows = []
         for find_str in find_replace_dict:
             all_rows.append([find_str, find_replace_dict[find_str]['replacer'],  find_replace_dict[find_str]['replacements_count']])
-        find_replace_sorted_file = open(config['file_paths']['find_replace_sorted_file'], mode='w', encoding=config['file_paths']['encoding'])
+        find_replace_sorted_file = open(config['files']['find_replace_sorted_file'], mode='w', encoding=config['files']['encoding'])
         find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
         find_replace_sorted_file_writer.writerows(all_rows)
         find_replace_sorted_file.close()
