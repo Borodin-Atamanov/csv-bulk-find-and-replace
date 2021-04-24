@@ -52,7 +52,7 @@ def str_ireplace(text, old, new):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quiet. 2 - Ok. 4 - very verbose
-    verbose = 3
+    verbose = 2
 
     #Use case insensitive search and replace?
     case_insensitive = On
