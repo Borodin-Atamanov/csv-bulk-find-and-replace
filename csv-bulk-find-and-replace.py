@@ -17,8 +17,8 @@ limitations under the License.
 
 import os
 import csv
-import shutil
-import datetime
+#import shutil
+#import datetime
 from configparser import ConfigParser, ExtendedInterpolation
 import jsonpickle
 
@@ -79,8 +79,9 @@ config_str = '''
     #Output filename. Where to save results of the application work?
     output_file = ${work_dir}/output.csv
 
-    #Save pairs of "find and replace", sorted by "find" strings lenghts in this file. It will not affect further work, but it may contain useful statistics.
-    find_replace_sorted_file = ${work_dir}/findreplace-statistics.csv
+    #Save pairs of "find and replace", sorted by "find" strings lenghts in this file.
+    #It will not affect further work, but it may contain useful statistics.
+    find_replace_sorted_file = ${work_dir}/findreplace-stat.csv
 
     default_input_file_content = "You should eat"
         "1 pizza, 1 beer, and 1 ice cream"
@@ -150,8 +151,7 @@ def main():
                     if config.getint('Common', 'verbose') >= 2: print (row)
             #Sort dictionary by key length (biggest key will be at the top of dict)
             find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=True, key=lambda item: len(str(item[0]))) }
-            if config.getint('Common', 'verbose') >= 2: print ("Processed {0} lines from {1}".format(line_count, config['files']['find_replace_file']))
-            if config.getint('Common', 'verbose') >= 3: print_json(find_replace_dict)
+            if config.getint('Common', 'verbose') >= 2: print ("Loaded {0} lines from {1}".format(line_count, config['files']['find_replace_file']))
 
     #Check that input_file is exist. Will create empty one if not
     if (not os.path.isfile(config['files']['input_file'])):
@@ -208,11 +208,17 @@ def main():
             #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['files']['input_file'], config['files']['find_replace_file']))
             if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['files']['input_file']}")
             if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['files']['find_replace_file']}")
-            if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed")
-            if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} changed cells")
+            if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed from input file")
+            if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} cells changed")
             if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} Find-and-replace operations")
-
         output_file.close()
+
+        #
+        if os.path.exists(config['files']['find_replace_sorted_file']):
+            if config.getint('Common', 'verbose') >= 3: print (f"I deleted old file \"{config['files']['find_replace_sorted_file']}\" what has size {os.path.getsize(config['files']['find_replace_sorted_file'])} bytes")
+            os.remove(config['files']['find_replace_sorted_file'])
+        else:
+            if config.getint('Common', 'verbose') >= 3: print (f"{config['files']['find_replace_sorted_file']} is not exist, I will create it")
 
         #Write sorted find_replace pairs to file, add some statistics
         all_rows = []
@@ -222,6 +228,8 @@ def main():
         find_replace_sorted_file_writer = csv.writer(find_replace_sorted_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
         find_replace_sorted_file_writer.writerows(all_rows)
         find_replace_sorted_file.close()
+
+        if config.getint('Common', 'verbose') >= 2: print (f"I created file \"{config['files']['find_replace_sorted_file']}\" with "+str(os.path.getsize(config['files']['find_replace_sorted_file']))+f" bytes of statistics")
 
 if __name__ == "__main__":
     main()
