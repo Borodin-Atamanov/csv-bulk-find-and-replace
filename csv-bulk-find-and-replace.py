@@ -52,7 +52,7 @@ def str_ireplace(text, old, new):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quiet. 2 - Ok. 4 - very verbose
-    verbose = 2
+    verbose = 3
 
     #Use case insensitive search and replace?
     case_insensitive = On
@@ -191,7 +191,7 @@ def main():
                         if config.getboolean('Common', 'case_insensitive') == True:
                             #Try to make case insensitive replace if needed
                             cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
-                            last_cell_replacements_count = cell_new.upper().count(find_str.upper())
+                            last_cell_replacements_count = cell_before_replacement.upper().count(find_str.upper())
                         if config.getint('Common', 'verbose') >= 4: print (f"\ninput=[{cell_before_replacement}]")
                         if config.getint('Common', 'verbose') >= 4: print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
                         if config.getint('Common', 'verbose') >= 4: print (f"result=[{cell_new}]")
@@ -205,7 +205,12 @@ def main():
                     row_new.append(cell_new)
                 #Write new line to output_file
                 output_file_writer.writerow(row_new)
-            if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file'], config['file_paths']['find_replace_file']))
+            #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['file_paths']['input_file'], config['file_paths']['find_replace_file']))
+            if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['file_paths']['input_file']}")
+            if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['file_paths']['find_replace_file']}")
+            if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed")
+            if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} changed cells")
+            if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} Find-and-replace operations")
 
         output_file.close()
 
