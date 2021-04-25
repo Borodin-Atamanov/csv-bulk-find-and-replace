@@ -194,6 +194,12 @@ def main():
                         cell_before_replacement = cell_new
                         #Try to make case sensitive replace at first
                         #last_cell_replacements_count = cell_new.count(find_str)
+                        last_cell_replacements_count = 0
+                        #Check lenghts of string. I can not find longer string in the shorter one
+                        if (len(find_str) > len(cell_before_replacement)):
+                            #This cell is too short, continue with the next one
+                            continue
+
                         last_cell_replacements_count = cell_before_replacement.count(find_str)
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
 
@@ -234,6 +240,7 @@ def main():
             if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['files']['input_file']}")
             if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['files']['find_replace_file']}")
             if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed from input file")
+            if config.getint('Common', 'verbose') >= 3: print (f"{cell_count} cells processed from input file")
             if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} cells changed")
             if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} Find-and-replace operations")
         output_file.close()
