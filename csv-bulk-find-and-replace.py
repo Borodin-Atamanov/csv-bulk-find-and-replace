@@ -58,7 +58,7 @@ config_str = '''
     case_insensitive = On
 
     #Show work statistics every n-cells
-    show_statistics_every_n_lines_of_input_file = 3000
+    show_statistics_every_n_lines_of_input_file = 2500
 
 
 [files]
