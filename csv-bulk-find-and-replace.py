@@ -17,6 +17,7 @@ limitations under the License.
 
 import os
 import csv
+import time
 #import shutil
 #import datetime
 from configparser import ConfigParser, ExtendedInterpolation
@@ -52,10 +53,13 @@ def str_ireplace(text, old, new):
 config_str = '''
 [Common]
     #Application verbosity level. 0 - quiet. 2 - Ok. 4 - very verbose
-    verbose = 2
+    verbose = 3
 
     #Use case insensitive search and replace?
     case_insensitive = On
+
+    #Show work statistics every n-cells
+    show_statistics_every_n_cells_of_input_file = 1000
 
 
 [files]
@@ -167,9 +171,12 @@ def main():
         output_file_writer = csv.writer(output_file, delimiter=',', doublequote=True, quotechar='"', lineterminator='\n', quoting=csv.QUOTE_ALL)
 
         #Read CSV-data from input file...
+        #all_rows = []   #rows to output file
+        time_start = time.time()
         with open(config['files']['input_file'], mode='r', encoding=config['files']['encoding']) as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
+            cell_count = 0
             changed_cells_count = 0
             replacements_count = 0
             for row in csv_reader:
@@ -179,6 +186,7 @@ def main():
                 row_new = []
                 #Пройдёмся по каждой колонке в строке
                 for cell in row:
+                    cell_count += 1
                     cell_new = cell
                     #Cycle throw all find_replace_dict pairs
                     #Search and replace every substring, starting from longest strings to shortest
@@ -188,14 +196,16 @@ def main():
                         #last_cell_replacements_count = cell_new.count(find_str)
                         last_cell_replacements_count = cell_before_replacement.count(find_str)
                         cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
-                        if config.getboolean('Common', 'case_insensitive') == True:
+
+                        if bool(config._sections['Common']['case_insensitive']) == True:
                             #Try to make case insensitive replace if needed
                             cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
                             last_cell_replacements_count = cell_before_replacement.upper().count(find_str.upper())
-                        if config.getint('Common', 'verbose') >= 4: print (f"\ninput=[{cell_before_replacement}]")
-                        if config.getint('Common', 'verbose') >= 4: print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
-                        if config.getint('Common', 'verbose') >= 4: print (f"result=[{cell_new}]")
-                        if config.getint('Common', 'verbose') >= 4: print (f"last_cell_replacements_count={last_cell_replacements_count}")
+                        if int(config._sections['Common']['verbose']) >= 4:
+                            print (f"\ninput=[{cell_before_replacement}]")
+                            print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
+                            print (f"result=[{cell_new}]")
+                            print (f"last_cell_replacements_count={last_cell_replacements_count}")
                         if cell_before_replacement != cell_new:
                             replacements_count += last_cell_replacements_count
                             find_replace_dict[find_str]['replacements_count'] += last_cell_replacements_count
@@ -204,7 +214,22 @@ def main():
                     col += 1
                     row_new.append(cell_new)
                 #Write new line to output_file
+                #all_rows.append(row_new)
                 output_file_writer.writerow(row_new)
+
+                #Show runtime statistics
+                if (cell_count % int(config._sections['Common']['show_statistics_every_n_cells_of_input_file'])) == 0:
+                    time_end = time.time()
+                    time_delta = time_end - time_start
+                    speed_cells_per_sec = int(config._sections['Common']['show_statistics_every_n_cells_of_input_file']) / time_delta
+                    if 'average_speed_cells_per_sec' not in vars():
+                        average_speed_cells_per_sec = speed_cells_per_sec * .9
+                    average_speed_by_how_many_intervals = 10
+                    average_speed_cells_per_sec = (average_speed_cells_per_sec * (average_speed_by_how_many_intervals - 1) + speed_cells_per_sec) / average_speed_by_how_many_intervals
+                    if int(config._sections['Common']['verbose']) >= 3: print (f"Speed is {average_speed_cells_per_sec:.00f} cells per second. Computed {cell_count} cells")
+                    time_start = time_end
+
+            #output_file_writer.writerows(all_rows)
             #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['files']['input_file'], config['files']['find_replace_file']))
             if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['files']['input_file']}")
             if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['files']['find_replace_file']}")
