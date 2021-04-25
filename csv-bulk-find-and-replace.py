@@ -229,18 +229,27 @@ def main():
                 if (line_count % int(config._sections['Common']['show_statistics_every_n_lines_of_input_file'])) == 0:
                     time_end = time.time()
                     time_delta = time_end - time_start
+
                     if 'computed_cells_start' not in vars():
                         computed_cells_start = 0
                     computed_cells_end = cell_count
                     computed_cells_delta = computed_cells_end - computed_cells_start
                     speed_cells_per_sec = computed_cells_delta / time_delta
+
                     if 'average_speed_cells_per_sec' not in vars():
                         average_speed_cells_per_sec = speed_cells_per_sec * 0.7
                     average_speed_by_how_many_intervals = 9
                     average_speed_cells_per_sec = (average_speed_cells_per_sec * (average_speed_by_how_many_intervals - 1) + speed_cells_per_sec) / average_speed_by_how_many_intervals
-                    if int(config._sections['Common']['verbose']) >= 3: print (f"Speed is {average_speed_cells_per_sec:.00f} cells per second. Computed {cell_count} cells. {replacements_count} replacements made.")
+
+                    if 'replacements_count_start' not in vars():
+                        replacements_count_start = 0
+                    replacements_count_end = replacements_count
+                    replacements_count_delta = replacements_count_end - replacements_count_start
+
+                    if int(config._sections['Common']['verbose']) >= 3: print (f"Computed {cell_count} cells. Speed is {average_speed_cells_per_sec:.00f} cells per second. {replacements_count_delta} replacements made.")
                     time_start = time_end
                     computed_cells_start = cell_count
+                    replacements_count_start = replacements_count
 
             #output_file_writer.writerows(all_rows)
             #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['files']['input_file'], config['files']['find_replace_file']))
