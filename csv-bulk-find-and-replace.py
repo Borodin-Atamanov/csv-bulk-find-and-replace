@@ -148,6 +148,7 @@ def main():
                         {
                             'replacer': row[1],
                             'replacements_count': 0,
+                            'original_line_id': line_count,
                         }
                 else:
                     #Ignore rows, if they don't have 2 cells
@@ -254,6 +255,8 @@ def main():
 
         #Write sorted find_replace pairs to file, add some statistics
         all_rows = []
+        #sort in original line order
+        find_replace_dict = {k: v for k,v in sorted(find_replace_dict.items(), reverse=False, key=lambda item: item[1].get('original_line_id', 0)) }
         for find_str in find_replace_dict:
             all_rows.append([find_str, find_replace_dict[find_str]['replacer'],  find_replace_dict[find_str]['replacements_count']])
         find_replace_sorted_file = open(config['files']['find_replace_sorted_file'], mode='w', encoding=config['files']['encoding'])
