@@ -18,10 +18,8 @@ limitations under the License.
 import os
 import csv
 import time
-#import shutil
-#import datetime
-from configparser import ConfigParser, ExtendedInterpolation
 import jsonpickle
+from configparser import ConfigParser, ExtendedInterpolation
 
 __author__ = "Slava Borodin-Atamanov"
 __license__ = "Apache 2.0"
@@ -59,7 +57,7 @@ config_str = '''
     case_insensitive = On
 
     #Show work statistics every n-cells
-    show_statistics_every_n_cells_of_input_file = 5000
+    show_statistics_every_n_lines_of_input_file = 3000
 
 
 [files]
@@ -104,6 +102,9 @@ config_str = '''
 
 def main():
     #Start!
+    time_start = time.time()
+    time_main_start = time_start
+
     #Create new configparser object
     config = ConfigParser (interpolation=ExtendedInterpolation())
     #Load configuration from inline hardcoded string
@@ -173,7 +174,6 @@ def main():
 
         #Read CSV-data from input file...
         #all_rows = []   #rows to output file
-        time_start = time.time()
         with open(config['files']['input_file'], mode='r', encoding=config['files']['encoding']) as input_file:
             csv_reader = csv.reader(input_file)
             line_count = 0
@@ -225,25 +225,33 @@ def main():
                 output_file_writer.writerow(row_new)
 
                 #Show runtime statistics
-                if (cell_count % int(config._sections['Common']['show_statistics_every_n_cells_of_input_file'])) == 0:
+                if (line_count % int(config._sections['Common']['show_statistics_every_n_lines_of_input_file'])) == 0:
                     time_end = time.time()
                     time_delta = time_end - time_start
-                    speed_cells_per_sec = int(config._sections['Common']['show_statistics_every_n_cells_of_input_file']) / time_delta
+                    if 'computed_cells_start' not in vars():
+                        computed_cells_start = 0
+                    computed_cells_end = cell_count
+                    computed_cells_delta = computed_cells_end - computed_cells_start
+                    speed_cells_per_sec = computed_cells_delta / time_delta
                     if 'average_speed_cells_per_sec' not in vars():
-                        average_speed_cells_per_sec = speed_cells_per_sec * .9
-                    average_speed_by_how_many_intervals = 100
+                        average_speed_cells_per_sec = speed_cells_per_sec * 0.7
+                    average_speed_by_how_many_intervals = 9
                     average_speed_cells_per_sec = (average_speed_cells_per_sec * (average_speed_by_how_many_intervals - 1) + speed_cells_per_sec) / average_speed_by_how_many_intervals
-                    if int(config._sections['Common']['verbose']) >= 3: print (f"Speed is {average_speed_cells_per_sec:.00f} cells per second. Computed {cell_count} cells")
+                    if int(config._sections['Common']['verbose']) >= 3: print (f"Speed is {average_speed_cells_per_sec:.00f} cells per second. Computed {cell_count} cells. {replacements_count} replacements made.")
                     time_start = time_end
+                    computed_cells_start = cell_count
 
             #output_file_writer.writerows(all_rows)
             #if config.getint('Common', 'verbose') >= 2: print ("\nInput file: {3}\nfind-and-replace file: {4}\n{0} lines processed\n{1} changed cells\n{2} Find-and-replace operations".format(line_count, changed_cells_count, replacements_count, config['files']['input_file'], config['files']['find_replace_file']))
             if config.getint('Common', 'verbose') >= 3: print (f"\nInput file: {config['files']['input_file']}")
             if config.getint('Common', 'verbose') >= 3: print (f"find-and-replace file: {config['files']['find_replace_file']}")
             if config.getint('Common', 'verbose') >= 2: print (f"{line_count} lines processed from input file")
-            if config.getint('Common', 'verbose') >= 3: print (f"{cell_count} cells processed from input file")
+            if config.getint('Common', 'verbose') >= 3: print (f"{cell_count} cells computed")
             if config.getint('Common', 'verbose') >= 3: print (f"{changed_cells_count} cells changed")
-            if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} Find-and-replace operations")
+            if config.getint('Common', 'verbose') >= 1: print (f"{replacements_count} replacements made")
+            if config.getint('Common', 'verbose') >= 3:
+                time_main_delta = round(time.time() - time_main_start + 0.5)
+                print (f"{time_main_delta:.0f} irrecoverable seconds wasted")
         output_file.close()
 
         #
@@ -251,7 +259,7 @@ def main():
             if config.getint('Common', 'verbose') >= 3: print (f"I deleted old file \"{config['files']['find_replace_sorted_file']}\" what has size {os.path.getsize(config['files']['find_replace_sorted_file'])} bytes")
             os.remove(config['files']['find_replace_sorted_file'])
         else:
-            if config.getint('Common', 'verbose') >= 3: print (f"{config['files']['find_replace_sorted_file']} is not exist, I will create it")
+            if config.getint('Common', 'verbose') >= 4: print (f"{config['files']['find_replace_sorted_file']} is not exist, I will create it")
 
         #Write sorted find_replace pairs to file, add some statistics
         all_rows = []
