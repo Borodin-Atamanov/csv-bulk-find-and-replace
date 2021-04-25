@@ -59,7 +59,7 @@ config_str = '''
     case_insensitive = On
 
     #Show work statistics every n-cells
-    show_statistics_every_n_cells_of_input_file = 1000
+    show_statistics_every_n_cells_of_input_file = 5000
 
 
 [files]
@@ -224,7 +224,7 @@ def main():
                     speed_cells_per_sec = int(config._sections['Common']['show_statistics_every_n_cells_of_input_file']) / time_delta
                     if 'average_speed_cells_per_sec' not in vars():
                         average_speed_cells_per_sec = speed_cells_per_sec * .9
-                    average_speed_by_how_many_intervals = 10
+                    average_speed_by_how_many_intervals = 100
                     average_speed_cells_per_sec = (average_speed_cells_per_sec * (average_speed_by_how_many_intervals - 1) + speed_cells_per_sec) / average_speed_by_how_many_intervals
                     if int(config._sections['Common']['verbose']) >= 3: print (f"Speed is {average_speed_cells_per_sec:.00f} cells per second. Computed {cell_count} cells")
                     time_start = time_end
