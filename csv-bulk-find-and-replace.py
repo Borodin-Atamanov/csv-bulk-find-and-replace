@@ -194,21 +194,23 @@ def main():
                     #Search and replace every substring, starting from longest strings to shortest
                     for find_str in find_replace_dict:
                         cell_before_replacement = cell_new
-                        #Try to make case sensitive replace at first
                         #last_cell_replacements_count = cell_new.count(find_str)
-                        last_cell_replacements_count = 0
                         #Check lenghts of string. I can not find longer string in the shorter one
                         if (len(find_str) > len(cell_before_replacement)):
                             #This cell is too short, continue with the next one
                             continue
-
-                        last_cell_replacements_count = cell_before_replacement.count(find_str)
-                        cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
+                        last_cell_replacements_count = 0
 
                         if bool(config._sections['Common']['case_insensitive']) == True:
                             #Try to make case insensitive replace if needed
                             cell_new = str_ireplace(cell_new, find_str, find_replace_dict[find_str]['replacer'])
                             last_cell_replacements_count = cell_before_replacement.upper().count(find_str.upper())
+                        else:
+                            #Try to make case sensitive replace
+                            cell_new = cell_new.replace(find_str, find_replace_dict[find_str]['replacer'])
+                            last_cell_replacements_count = cell_before_replacement.count(find_str)
+
+                        #Very slow: config.getint(bla-bla-bla), x100 times faster: int(config._sections['bla-bla-bla'])
                         if int(config._sections['Common']['verbose']) >= 4:
                             print (f"\ninput=[{cell_before_replacement}]")
                             print (f"search=[{find_str}], replace to=[{find_replace_dict[find_str]['replacer']}]")
