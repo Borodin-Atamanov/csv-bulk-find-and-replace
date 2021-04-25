@@ -19,7 +19,8 @@ import os
 import csv
 import time
 import jsonpickle
-from configparser import ConfigParser, ExtendedInterpolation
+from configparser import ConfigParser
+from configparser import ExtendedInterpolation
 
 __author__ = "Slava Borodin-Atamanov"
 __license__ = "Apache 2.0"
